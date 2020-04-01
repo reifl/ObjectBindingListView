@@ -47,7 +47,9 @@ namespace TestProjekt
                 test = "b"
             });
 
-            ObjectListView<testClass> objList = new ObjectListView<testClass>();
+            LinqExtension.MethodInfos.Add("test", typeof(Form1).GetMethod("containsTestString"));
+
+            ObjectListView <testClass> objList = new ObjectListView<testClass>();
             objList.DataSource = liste;
 
             bindingSource1.DataSource = objList;
@@ -55,8 +57,13 @@ namespace TestProjekt
 
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = bindingSource1;
+            bindingSource1.Filter = "test(x123)";
         }
 
+        public static bool containsTestString(string x)
+        {
+            return x.Contains("test");
+        }
         
         private void button1_Click(object sender, EventArgs e)
         {

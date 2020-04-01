@@ -14,14 +14,6 @@ namespace ObjectBindingListView
     {
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, string filter)
         {
-            if (MethodInfos == null)
-            {
-
-                MethodInfos = new Dictionary<string, MethodInfo>();
-                MethodInfos.Add("ISNULL".ToLower(), typeof(InternalFunctions).GetMethod("IsNull"));
-                MethodInfos.Add("SUBSTRING".ToLower(), typeof(InternalFunctions).GetMethod("substring"));
-                MethodInfos.Add("TRIM".ToLower(), typeof(InternalFunctions).GetMethod("Trim"));
-            }
 
             var tokenizer = new Parsing.Tokenizer.Tokenizer();
             var tokens = tokenizer.Tokenize(filter);
@@ -32,7 +24,27 @@ namespace ObjectBindingListView
             return source.WhereClause<T>(dsl.MatchConditions);
         }
 
+        public static IDictionary<string, MethodInfo> MethodInfos
+        {
+            get
+            {
+                if (methodInfos == null)
+                    initMethodInfos();
+                return methodInfos;
+            }
+        }
 
+        private static void initMethodInfos()
+        {
+            if (methodInfos == null)
+            {
+
+                methodInfos = new Dictionary<string, MethodInfo>();
+                methodInfos.Add("ISNULL".ToLower(), typeof(InternalFunctions).GetMethod("IsNull"));
+                methodInfos.Add("SUBSTRING".ToLower(), typeof(InternalFunctions).GetMethod("substring"));
+                methodInfos.Add("TRIM".ToLower(), typeof(InternalFunctions).GetMethod("Trim"));
+            }
+        }
 
         private static object GetStringAsObject(string ObjectValue, Type t)
         {
@@ -99,7 +111,7 @@ namespace ObjectBindingListView
             return null;
         }
 
-        private static IDictionary<string, MethodInfo> MethodInfos;
+        private static IDictionary<string, MethodInfo> methodInfos;
 
 
 
