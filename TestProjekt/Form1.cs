@@ -1,7 +1,4 @@
-﻿using ObjectBoundBindingList;
-using ObjectBoundBindingList.LinqExtension;
-using ObjectBoundBindingList.Parser;
-using ObjectBoundBindingList.Tokenizer;
+﻿using ObjectBindingListView;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -50,7 +47,7 @@ namespace TestProjekt
                 test = "b"
             });
 
-            ObjectBindingList<testClass> objList = new ObjectBindingList<testClass>();
+            ObjectListView<testClass> objList = new ObjectListView<testClass>();
             objList.DataSource = liste;
 
             bindingSource1.DataSource = objList;

@@ -79,5 +79,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ObjectBindingListView\ObjectBindingListView.csproj">
+      <Project>{04f5149e-39d5-4359-aedc-b950af012063}</Project>
+      <Name>ObjectBindingListView</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
