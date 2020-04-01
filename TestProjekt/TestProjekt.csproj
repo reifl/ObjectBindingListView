@@ -79,15 +79,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FilterInObjectBoundBindingSource\FilterInObjectBoundBindingSource.csproj">
-      <Project>{33fe565f-fe70-4ec9-a54c-32c03c3e0f96}</Project>
-      <Name>FilterInObjectBoundBindingSource</Name>
-    </ProjectReference>
-    <ProjectReference Include="E:\Downloads\DgvFilterPopup-master\DgvFilterPopup\DgvFilterPopup.csproj">
-      <Project>{b807e757-4da2-4e2f-80a2-301038e96f7b}</Project>
-      <Name>DgvFilterPopup</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

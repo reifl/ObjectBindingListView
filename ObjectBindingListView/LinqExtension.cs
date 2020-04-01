@@ -1,5 +1,5 @@
-﻿using ObjectBoundBindingList.DataRepresentation;
-using ObjectBoundBindingList.Parser;
+﻿using ObjectBindingListView.DataRepresentation;
+using ObjectBindingListView.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,27 +7,26 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace ObjectBoundBindingList.LinqExtension
+namespace ObjectBindingListView
 {
-    public static class LINQExtension
+    public static class LinqExtension
     {
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, string filter)
         {
-            if(MethodInfos == null)
+            if (MethodInfos == null)
             {
-                
+
                 MethodInfos = new Dictionary<string, MethodInfo>();
-                MethodInfos.Add("ISNULL".ToLower(), typeof(InnerFunctions).GetMethod("IsNull"));
-                MethodInfos.Add("SUBSTRING".ToLower(), typeof(InnerFunctions).GetMethod("substring"));
-                MethodInfos.Add("TRIM".ToLower(), typeof(InnerFunctions).GetMethod("Trim"));
+                MethodInfos.Add("ISNULL".ToLower(), typeof(InternalFunctions).GetMethod("IsNull"));
+                MethodInfos.Add("SUBSTRING".ToLower(), typeof(InternalFunctions).GetMethod("substring"));
+                MethodInfos.Add("TRIM".ToLower(), typeof(InternalFunctions).GetMethod("Trim"));
             }
 
-            var tokenizer = new TokenizerNew.PrecedenceBasedRegexTokenizer();
+            var tokenizer = new Parsing.Tokenizer.Tokenizer();
             var tokens = tokenizer.Tokenize(filter);
 
-            var dslParser = new DslParser();
+            var dslParser = new Parsing.Parser();
             var dsl = dslParser.Parse(tokens.ToList());
 
             return source.WhereClause<T>(dsl.MatchConditions);
@@ -144,7 +143,7 @@ namespace ObjectBoundBindingList.LinqExtension
                 switch (x.Operator)
                 {
                     case DslOperator.Like:
-                        currentCond = Expression.Call(typeof(LINQExtension).GetMethod("RegexMatch", new Type[] { typeof(string), typeof(string) }), new Expression[] {
+                        currentCond = Expression.Call(typeof(LinqExtension).GetMethod("RegexMatch", new Type[] { typeof(string), typeof(string) }), new Expression[] {
                             GetExpressionFromIValue(pe, x.Value1, typeof(string)),
                             GetExpressionFromIValue(pe, x.Value2, typeof(string))
                         });
@@ -244,16 +243,16 @@ namespace ObjectBoundBindingList.LinqExtension
             var type = t;
             var properties = type.GetProperties();
             var prop = properties.Where(x => x.Name.ToLower() == value.ToLower()).FirstOrDefault();
-            if(prop != null)
+            if (prop != null)
                 return prop.PropertyType;
 
             var fields = type.GetFields();
             var field = fields.Where(x => x.Name.ToLower() == value.ToLower()).FirstOrDefault();
             if (field != null)
                 return field.FieldType;
-            
-                throw new ArgumentOutOfRangeException("Cannot find " + value + " Property or Field.");
-            
+
+            throw new ArgumentOutOfRangeException("Cannot find " + value + " Property or Field.");
+
         }
     }
 }

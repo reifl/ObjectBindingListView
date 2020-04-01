@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ObjectBoundBindingList.Tokenizer
 {
-    public class TokenMatch
+    public class TokenMatchOld
     {
         public bool IsMatch { get; set; }
         public TokenType TokenType { get; set; }

@@ -56,15 +56,6 @@ namespace TestProjekt
             bindingSource1.DataSource = objList;
 
 
-            var t = new Tokenizer();
-            var tokens = t.Tokenize("ISNULL(test) OR xf = 4");
-            var dslParser = new DslParser();
-            var queryModel = dslParser.Parse(tokens);
-
-            var z = liste.Where("x123 = 'blub3'");
-
-            System.Diagnostics.Debugger.Break();
-
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = bindingSource1;
         }
@@ -72,7 +63,7 @@ namespace TestProjekt
         
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            bindingSource1.Filter = "NOT xf = 4 AND NOT xf = 1";
         }
     }
 

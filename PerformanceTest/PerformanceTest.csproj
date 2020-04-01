@@ -50,9 +50,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FilterInObjectBoundBindingSource\FilterInObjectBoundBindingSource.csproj">
-      <Project>{33fe565f-fe70-4ec9-a54c-32c03c3e0f96}</Project>
-      <Name>FilterInObjectBoundBindingSource</Name>
+    <ProjectReference Include="..\ObjectBindingListView\ObjectBindingListView.csproj">
+      <Project>{04f5149e-39d5-4359-aedc-b950af012063}</Project>
+      <Name>ObjectBindingListView</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

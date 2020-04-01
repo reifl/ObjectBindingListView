@@ -1,11 +1,13 @@
-﻿using ObjectBoundBindingList.DataRepresentation;
-using ObjectBoundBindingList.LinqExtension;
-using ObjectBoundBindingList.Parser;
-using ObjectBoundBindingList.Tokenizer;
+﻿using ObjectBindingListView;
+using ObjectBindingListView.DataRepresentation;
+using ObjectBindingListView.Parsing;
+using ObjectBindingListView.Parsing.Tokenizer;
+using ObjectBindingListView.Parsing.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PerformanceTest
@@ -36,7 +38,7 @@ namespace PerformanceTest
             for (int i = 0; i < 1000; i++)
             {
                 var t = new Tokenizer();
-                tokens = t.Tokenize("Age > 3 AND Age < 8");
+                tokens = t.Tokenize("Age > 3 AND Age < 8 OR id=1").ToList();
             }
             sw.Stop();
             Console.WriteLine("Tokenizer Time: " + sw.Elapsed);
@@ -44,7 +46,7 @@ namespace PerformanceTest
             sw.Start();
             for (int i = 0; i < 1000; i++)
             {
-                var dslParser = new DslParser();
+                var dslParser = new Parser();
                 dslModel = dslParser.Parse(tokens);
             }
             sw.Stop();
@@ -62,7 +64,7 @@ namespace PerformanceTest
             sw.Start();
             for(int i=0; i<1000; i++)
             {
-                x = elements.Where("Age > 3 AND Age < 8");
+                x = elements.Where("Age > 3 AND Age < 8 OR (id > 50 AND id < 1000)");
                 
             }
             sw.Stop();
@@ -71,7 +73,7 @@ namespace PerformanceTest
             sw.Start();
             for (int i = 0; i < 1000; i++)
             {
-                x = elements.Where(y => y.Age > 3 && y.Age < 8);
+                x = elements.Where(y => y.Age > 3 && y.Age < 8 || (y.id > 50 && y.id < 1000));
             }
             sw.Stop();
             Console.WriteLine("Lambda Filter: " + sw.Elapsed + " found: " + x.Count().ToString());

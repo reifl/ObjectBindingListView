@@ -26,7 +26,7 @@ namespace ObjectBoundBindingList.Tokenizer
             _returnsToken = returnsToken;
         }
 
-        public TokenMatch Match(string inputString)
+        public TokenMatchOld Match(string inputString)
         {
             var match = _regex.Match(inputString);
             if (match.Success)
@@ -35,7 +35,7 @@ namespace ObjectBoundBindingList.Tokenizer
                 if (match.Length != inputString.Length)
                     remainingText = inputString.Substring(match.Length);
 
-                return new TokenMatch()
+                return new TokenMatchOld()
                 {
                     IsMatch = true,
                     RemainingText = remainingText,
@@ -45,7 +45,7 @@ namespace ObjectBoundBindingList.Tokenizer
             }
             else
             {
-                return new TokenMatch() { IsMatch = false };
+                return new TokenMatchOld() { IsMatch = false };
             }
 
         }

@@ -79,7 +79,7 @@ namespace ObjectBoundBindingList.Tokenizer
             return tokens;
         }
 
-        private TokenMatch FindMatch(string lqlText)
+        private TokenMatchOld FindMatch(string lqlText)
         {
             foreach (var tokenDefinition in _tokenDefinitions)
             {
@@ -98,7 +98,7 @@ namespace ObjectBoundBindingList.Tokenizer
 
             }
 
-            return new TokenMatch() { IsMatch = false };
+            return new TokenMatchOld() { IsMatch = false };
         }
 
         private bool IsWhitespace(string lqlText)
@@ -106,12 +106,12 @@ namespace ObjectBoundBindingList.Tokenizer
             return Regex.IsMatch(lqlText, "^\\s+");
         }
 
-        private TokenMatch CreateInvalidTokenMatch(string lqlText)
+        private TokenMatchOld CreateInvalidTokenMatch(string lqlText)
         {
             var match = Regex.Match(lqlText, "(^\\S+\\s)|^\\S+");
             if (match.Success)
             {
-                return new TokenMatch()
+                return new TokenMatchOld()
                 {
                     IsMatch = true,
                     RemainingText = lqlText.Substring(match.Length),

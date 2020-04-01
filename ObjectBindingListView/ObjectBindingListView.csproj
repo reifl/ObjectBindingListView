@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net4.7.2</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Offers Linq Where(string) and a IBindingListView Implementation. Based On: https://github.com/Vanlightly/DslParser </Description>
+    <Version>0.1</Version>
+    <Authors>Michael Reif</Authors>
+  </PropertyGroup>
+
+</Project>
