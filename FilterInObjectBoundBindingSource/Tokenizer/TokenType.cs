@@ -10,16 +10,12 @@ namespace ObjectBoundBindingList.Tokenizer
     {
         NotDefined,
         And,
-        Application,
         Between,
         CloseParenthesis,
         Comma,
         DateTimeValue,
         Equals,
-        ExceptionType,
-        Fingerprint,
         In,
-        Invalid,
         Like,
         Limit,
         Match,
@@ -27,7 +23,6 @@ namespace ObjectBoundBindingList.Tokenizer
         LowerThan,
         GreaterOrEqual,
         LowerOrEqual,
-        Message,
         NotEquals,
         NotIn,
         NotLike,
@@ -39,10 +34,10 @@ namespace ObjectBoundBindingList.Tokenizer
         Null,
         Is,
         OpenParenthesis,
-        StackFrame,
         StringValue,
         SequenceTerminator,
         Function,
-        Variable
+        Variable,
+        Invalid
     }
 }

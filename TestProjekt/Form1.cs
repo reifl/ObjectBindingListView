@@ -1,4 +1,5 @@
 ﻿using ObjectBoundBindingList;
+using ObjectBoundBindingList.LinqExtension;
 using ObjectBoundBindingList.Parser;
 using ObjectBoundBindingList.Tokenizer;
 using System;
@@ -43,7 +44,7 @@ namespace TestProjekt
             });
             liste.Add(new testClass
             {
-                x123 = "blub3",
+                x123 = "   blub3   ",
                 xf = 4,
                 t = 4.5f,
                 test = "b"
@@ -56,9 +57,12 @@ namespace TestProjekt
 
 
             var t = new Tokenizer();
-            var tokens = t.Tokenize("test IS NULL AND ISNULL(test, 'blub')");
+            var tokens = t.Tokenize("ISNULL(test) OR xf = 4");
             var dslParser = new DslParser();
             var queryModel = dslParser.Parse(tokens);
+
+            var z = liste.Where("x123 = 'blub3'");
+
             System.Diagnostics.Debugger.Break();
 
             dataGridView1.DataSource = null;

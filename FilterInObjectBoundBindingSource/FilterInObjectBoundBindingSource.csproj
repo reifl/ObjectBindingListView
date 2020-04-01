@@ -55,14 +55,16 @@
     <Compile Include="DataRepresentationNew\FixedValue.cs" />
     <Compile Include="DataRepresentationNew\FunctionCallValue.cs" />
     <Compile Include="DataRepresentationNew\IValue.cs" />
+    <Compile Include="DataRepresentationNew\ListValue.cs" />
     <Compile Include="DataRepresentationNew\MatchCondition.cs" />
+    <Compile Include="DataRepresentationNew\NullValue.cs" />
     <Compile Include="DataRepresentationNew\VariableValue.cs" />
     <Compile Include="DataRepresentation\DateRange.cs" />
     <Compile Include="DataRepresentation\DslLogicalOperator.cs" />
     <Compile Include="DataRepresentation\DslObject.cs" />
     <Compile Include="DataRepresentation\DslOperator.cs" />
     <Compile Include="DataRepresentation\DslQueryModel.cs" />
-    <Compile Include="DataRepresentation\MatchCondition.cs" />
+    <Compile Include="LinqExtension\InnerFunctions.cs" />
     <Compile Include="LinqExtension\LINQExtension.cs" />
     <Compile Include="ObjectBindingList\ObjectBindingList.cs" />
     <Compile Include="Parser\DslParser.cs" />

@@ -110,9 +110,23 @@ namespace ObjectBoundBindingList.Parser
                 DiscardToken(TokenType.OpenParenthesis);
                 MatchCondition();
                 return;
-            } 
-            else if (IsObject(_lookaheadFirst))
+            }
+            if (_lookaheadFirst.TokenType == TokenType.Function)
             {
+                _currentMatchCondition.Value1 = GetIValueFromDslToken();
+                if (IsLogialOperator(_lookaheadFirst))
+                    BooleanFunctionMatchCondition();
+                if (IsEqualityOperator(_lookaheadFirst))
+                {
+                    EqualityFunctionMatchCondition();
+                }
+                if(_lookaheadFirst.TokenType != TokenType.SequenceTerminator)
+                    MatchConditionNext();
+                return;
+            }
+            if (IsObject(_lookaheadFirst))
+            {
+                
                 if (IsEqualityOperator(_lookaheadSecond))
                 {
                     EqualityMatchCondition();
@@ -132,13 +146,32 @@ namespace ObjectBoundBindingList.Parser
 
                 MatchConditionNext();
             }
-            else if(_lookaheadFirst.TokenType == TokenType.Function)
-            {
-            }
             else
             {
                 throw new DslParserException(ExpectedObjectErrorText + _lookaheadFirst.Value);
             }
+        }
+
+        private void EqualityFunctionMatchCondition()
+        {
+            IValue Value2;
+            DslOperator Operator;
+
+            Operator = GetOperator(_lookaheadFirst);
+            DiscardToken();
+            Value2 = GetIValueFromDslToken();
+            _currentMatchCondition.Operator = Operator;
+            _currentMatchCondition.Value2 = Value2;
+        }
+
+        private void BooleanFunctionMatchCondition()
+        {
+            var Operator = DslOperator.Equals;
+
+            var Value2 = new FixedValue();
+            (Value2 as FixedValue).Value = "true";
+            _currentMatchCondition.Value2 = Value2;
+            _currentMatchCondition.Operator = Operator;
         }
 
         private bool IsInverter(DslToken token)
@@ -146,32 +179,74 @@ namespace ObjectBoundBindingList.Parser
             return token.TokenType == TokenType.Invert;
         }
 
+        private IValue GetIValueFromDslToken()
+        {
+            IValue returnValue = null;
+            DslObject obj = GetObject(_lookaheadFirst);
+            if(obj == DslObject.Variable)
+            {
+                returnValue = new VariableValue();
+                (returnValue as VariableValue).VariableName = _lookaheadFirst.Value;
+                DiscardToken();
+            } else if(obj == DslObject.FixedValue)
+            {
+                returnValue = new FixedValue();
+                (returnValue as FixedValue).Value = _lookaheadFirst.Value;
+                DiscardToken();
+            } else if(obj == DslObject.NULL)
+            {
+                returnValue = new NullValue();
+                DiscardToken();
+            } else if(obj == DslObject.Function)
+            {
+                returnValue = new FunctionCallValue();
+                var x = returnValue as FunctionCallValue;
+                x.FunctionName = _lookaheadFirst.Value.Remove(_lookaheadFirst.Value.Length - 1);
+                DiscardToken();
+                while(_lookaheadFirst.TokenType != TokenType.CloseParenthesis)
+                {
+                    x.Parameters.Add(GetIValueFromDslToken());
+                    if(!(_lookaheadFirst.TokenType == TokenType.Comma || _lookaheadFirst.TokenType == TokenType.CloseParenthesis))
+                    {
+                        throw new ArgumentException(", or ) expected " + _lookaheadFirst.Value + " found");
+                    }
+                    if (_lookaheadFirst.TokenType == TokenType.Comma)
+                        DiscardToken();
+                }
+                DiscardToken();
+            }
+            
+            return returnValue;
+        }
+
         private void EqualityMatchCondition()
         {
-            _currentMatchCondition.Object = GetObject(_lookaheadFirst);
+            IValue Value1;
+            IValue Value2;
+            DslOperator Operator;
+
+            Value1 = GetIValueFromDslToken();
+
+            Operator = GetOperator(_lookaheadFirst);
             DiscardToken();
-            _currentMatchCondition.Operator = GetOperator(_lookaheadFirst);
-            DiscardToken();
-            _currentMatchCondition.Value = _lookaheadFirst.Value;
-            DiscardToken();
+            Value2 = GetIValueFromDslToken();
+ 
+
+            _currentMatchCondition.Value1 = Value1;
+            _currentMatchCondition.Operator = Operator;
+            _currentMatchCondition.Value2 = Value2;
         }
 
         private DslObject GetObject(DslToken token)
         {
             switch (token.TokenType)
             {
-                case TokenType.Application:
-                    return DslObject.Application;
-                case TokenType.ExceptionType:
-                    return DslObject.ExceptionType;
-                case TokenType.Fingerprint:
-                    return DslObject.Fingerprint;
-                case TokenType.Message:
-                    return DslObject.Message;
-                case TokenType.StackFrame:
-                    return DslObject.StackFrame;
                 case TokenType.Variable:
                     return DslObject.Variable;
+                case TokenType.Null:
+                    return DslObject.NULL;
+                case TokenType.Function:
+                    return DslObject.Function;
                 case TokenType.Number:
                 case TokenType.StringValue:
                 case TokenType.DateTimeValue:
@@ -179,6 +254,13 @@ namespace ObjectBoundBindingList.Parser
                 default:
                     throw new DslParserException(ExpectedObjectErrorText + token.Value);
             }
+        }
+
+        private bool IsLogialOperator(DslToken token)
+        {
+            if (token.TokenType == TokenType.And || token.TokenType == TokenType.Or || token.TokenType == TokenType.SequenceTerminator)
+                return true;
+            return false;
         }
 
         private DslOperator GetOperator(DslToken token)
@@ -210,7 +292,7 @@ namespace ObjectBoundBindingList.Parser
                 case TokenType.Function:
                     return DslOperator.Function;
                 default:
-                    throw new DslParserException("Expected =, !=, LIKE, NOT LIKE, IN, NOT IN but found: " + token.Value);
+                    throw new DslParserException("Expected =, !=, <>, >, >=, <, <=, LIKE, IN, IS, a Function Call but found: " + token.Value);
             }
         }
 
@@ -227,9 +309,9 @@ namespace ObjectBoundBindingList.Parser
         private void ParseInCondition(DslOperator inOperator)
         {
             _currentMatchCondition.Operator = inOperator;
-            _currentMatchCondition.Values = new List<string>();
-            _currentMatchCondition.Object = GetObject(_lookaheadFirst);
-            DiscardToken();
+
+            IValue value1 = GetIValueFromDslToken();
+            _currentMatchCondition.Value1 = value1;
 
             if (inOperator == DslOperator.In)
                 DiscardToken(TokenType.In);
@@ -243,7 +325,9 @@ namespace ObjectBoundBindingList.Parser
 
         private void StringLiteralList()
         {
-            _currentMatchCondition.Values.Add(ReadToken(TokenType.StringValue).Value);
+            _currentMatchCondition.Value2 = new ListValue();
+
+            (_currentMatchCondition.Value2 as ListValue).Values.Add(ReadToken(TokenType.StringValue).Value);
             DiscardToken(TokenType.StringValue);
             StringLiteralListNext();
         }
@@ -253,7 +337,7 @@ namespace ObjectBoundBindingList.Parser
             if (_lookaheadFirst.TokenType == TokenType.Comma)
             {
                 DiscardToken(TokenType.Comma);
-                _currentMatchCondition.Values.Add(ReadToken(TokenType.StringValue).Value);
+                (_currentMatchCondition.Value2 as ListValue).Values.Add(ReadToken(TokenType.StringValue).Value);
                 DiscardToken(TokenType.StringValue);
                 StringLiteralListNext();
             }
@@ -272,10 +356,6 @@ namespace ObjectBoundBindingList.Parser
             else if (_lookaheadFirst.TokenType == TokenType.Or)
             {
                 OrMatchCondition();
-            }
-            else if (_lookaheadFirst.TokenType == TokenType.Between)
-            {
-                DateCondition();
             }
             else if(_lookaheadFirst.TokenType == TokenType.CloseParenthesis)
             {
@@ -296,77 +376,21 @@ namespace ObjectBoundBindingList.Parser
 
         private void AndMatchCondition()
         {
-            _currentMatchCondition.LogOpToNextCondition = DslLogicalOperator.And;
+            _currentMatchCondition.NextLogOperator = DslLogicalOperator.And;
             DiscardToken(TokenType.And);
             MatchCondition();
         }
 
         private void OrMatchCondition()
         {
-            _currentMatchCondition.LogOpToNextCondition = DslLogicalOperator.Or;
+            _currentMatchCondition.NextLogOperator = DslLogicalOperator.Or;
             DiscardToken(TokenType.Or);
             MatchCondition();
         }
 
-        private void DateCondition()
-        {
-            DiscardToken(TokenType.Between);
-
-            _queryModel.DateRange = new DateRange();
-            _queryModel.DateRange.From = DateTime.ParseExact(ReadToken(TokenType.DateTimeValue).Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            DiscardToken(TokenType.DateTimeValue);
-            DiscardToken(TokenType.And);
-            _queryModel.DateRange.To = DateTime.ParseExact(ReadToken(TokenType.DateTimeValue).Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            DiscardToken(TokenType.DateTimeValue);
-            DateConditionNext();
-        }
-
-        private void DateConditionNext()
-        {
-            if (_lookaheadFirst.TokenType == TokenType.Limit)
-            {
-                Limit();
-            }
-            else if (_lookaheadFirst.TokenType == TokenType.SequenceTerminator)
-            {
-                // nothing
-            }
-            else
-            {
-                throw new DslParserException("Expected LIMIT or the end of the query but found: " + _lookaheadFirst.Value);
-            }
-
-        }
-
-        private void Limit()
-        {
-            DiscardToken(TokenType.Limit);
-            int limit = 0;
-            bool success = int.TryParse(ReadToken(TokenType.Number).Value, out limit);
-            if (success)
-                _queryModel.Limit = limit;
-            else
-                throw new DslParserException("Expected an integer number but found " + ReadToken(TokenType.Number).Value);
-
-            DiscardToken(TokenType.Number);
-        }
-
         private bool IsObject(DslToken token)
         {
-            if (token.TokenType == TokenType.Variable)
-                _currentMatchCondition.VariableName = token.Value;
-            if (token.TokenType == TokenType.Number
-                   || token.TokenType == TokenType.StringValue
-                   || token.TokenType == TokenType.DateTimeValue)
-            {
-                _currentMatchCondition.LeftSideValue = token.Value;
-            }
-            return token.TokenType == TokenType.Application
-                   || token.TokenType == TokenType.ExceptionType
-                   || token.TokenType == TokenType.Fingerprint
-                   || token.TokenType == TokenType.Message
-                   || token.TokenType == TokenType.StackFrame
-                   || token.TokenType == TokenType.Variable
+            return token.TokenType == TokenType.Variable
                    || token.TokenType == TokenType.Number
                    || token.TokenType == TokenType.StringValue
                    || token.TokenType == TokenType.DateTimeValue;

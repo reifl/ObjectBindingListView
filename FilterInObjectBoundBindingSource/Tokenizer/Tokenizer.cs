@@ -17,19 +17,15 @@ namespace ObjectBoundBindingList.Tokenizer
 
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Function, "^([A-Za-z_][A-Za-z0-9_]*\\()"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.And, "^and"));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Application, "^app|^application"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Between, "^between"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.CloseParenthesis, "^\\)"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Comma, "^,"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Equals, "^="));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.ExceptionType, "^ex|^exception"));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Fingerprint, "^fingerprint"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.NotIn, "^not in"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.In, "^in"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Like, "^like"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Limit, "^limit"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Match, "^match"));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Message, "^msg|^message"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.NotEquals, "^!=|^<>"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.GreaterOrEqual, "^>="));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.GreaterThan, "^>"));
@@ -43,7 +39,6 @@ namespace ObjectBoundBindingList.Tokenizer
             _tokenDefinitions.Add(new TokenDefinition(TokenType.False, "^false"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Null, "^null"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Is, "^is"));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.StackFrame, "^sf|^stackframe"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, "^\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.StringValue, "^'(?:[^'\\\\]|\\\\.)*'"));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Number, "^-?\\d+\\.\\d+|^-?\\d+"));

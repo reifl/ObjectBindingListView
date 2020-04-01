@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ObjectBoundBindingList.DataRepresentationNew
+namespace ObjectBoundBindingList.DataRepresentation
 {
-    class FixedValue : IValue
+    public class FixedValue : IValue
     {
         public string Value;
     }

@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ObjectBoundBindingList.DataRepresentationNew
+namespace ObjectBoundBindingList.DataRepresentation
 {
     public class MatchCondition
     {
-        private IValue Value1;
-        private IValue Value2;
-        private DslOperator Operator;
-        private MatchCondition SubConditions;
-        private bool Not;
-        private DslLogicalOperator NextLogOperator;
+        public IValue Value1;
+        public IValue Value2;
+        public DslOperator Operator;
+        public IList<MatchCondition> SubConditions = new List<MatchCondition>();
+        public bool Not;
+        public DslLogicalOperator NextLogOperator;
     }
 }

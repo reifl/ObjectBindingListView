@@ -12,9 +12,6 @@ namespace ObjectBoundBindingList.DataRepresentation
         {
             MatchConditions = new List<MatchCondition>();
         }
-
-        public DateRange DateRange { get; set; }
-        public int? Limit { get; set; }
         public IList<MatchCondition> MatchConditions { get; set; }
     }
 }

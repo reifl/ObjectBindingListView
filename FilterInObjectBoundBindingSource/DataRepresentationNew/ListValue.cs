@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ObjectBoundBindingList.DataRepresentation
 {
-    public class FunctionCallValue : IValue
+    public class ListValue : IValue
     {
-        public string FunctionName;
-        public IList<IValue> Parameters = new List<IValue>();
+        public IList<string> Values = new List<string>();
     }
 }

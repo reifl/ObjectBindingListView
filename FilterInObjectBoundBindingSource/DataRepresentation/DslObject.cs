@@ -15,6 +15,8 @@ namespace ObjectBoundBindingList.DataRepresentation
         Fingerprint,
         Variable,
         FixedValue,
+        NULL,
+        Function,
         OpenParenthesis,
         CloseParenthesis
     }
