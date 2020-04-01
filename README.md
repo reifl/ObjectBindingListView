@@ -19,21 +19,3 @@ objList.DataSource = liste;
 bindingSource1.DataSource = objList;
 bindingSource1.Filter = "x > 3";
 ```
-
-Register Custom Function:
-```csharp
-class TestFunction {
-        public static bool containsTestString(string x)
-        {
-            return x.Contains("test");
-        }
-}
-
-
-// First Parameter: Name of the Function in the Filter
-// Second Parameter: MethodInfo Object
-ObjectBindingListView.LinqExtension.MethodInfos.Add("test", typeof(Form1).GetMethod("containsTestString"));
-
-
-bindingSource1.Filter = "test(x123)";
-```
