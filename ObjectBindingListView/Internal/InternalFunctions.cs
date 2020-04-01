@@ -22,5 +22,12 @@ namespace ObjectBindingListView.Internal
         {
             return t.Trim();
         }
+
+        public static object convert(object t, string type)
+        {
+            if (type.ToLower() == "system.string")
+                return t.ToString();
+            return null;
+        }
     }
 }

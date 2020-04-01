@@ -14,6 +14,7 @@ namespace ObjectBindingListView.DataRepresentation
         Variable,
         FixedValue,
         NULL,
+        DataType,
         Function,
         OpenParenthesis,
         CloseParenthesis

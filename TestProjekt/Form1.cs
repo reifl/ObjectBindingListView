@@ -1,4 +1,5 @@
 ﻿using ObjectBindingListView;
+using ObjectBindingListView.Parsing.Tokenizer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,10 +55,12 @@ namespace TestProjekt
 
             bindingSource1.DataSource = objList;
 
+            var tokenizer = new Tokenizer();
+            var tokens = tokenizer.Tokenize("[x123] > 5");
 
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = bindingSource1;
-            bindingSource1.Filter = "test(x123)";
+            bindingSource1.Filter = "test([x123])";
         }
 
         public static bool containsTestString(string x)

@@ -61,10 +61,11 @@ namespace ObjectBindingListView.Parsing
             _lookaheadSecond = _tokenSequence.Pop();
         }
 
-        private DslToken ReadToken(TokenType tokenType)
+        private DslToken ReadToken(TokenType? tokenType = null)
         {
-            if (_lookaheadFirst.TokenType != tokenType)
-                throw new DslParserException(string.Format("Expected {0} but found: {1}", tokenType.ToString().ToUpper(), _lookaheadFirst.Value));
+            if(tokenType != null)
+                if (_lookaheadFirst.TokenType != tokenType.Value)
+                    throw new DslParserException(string.Format("Expected {0} but found: {1}", tokenType.ToString().ToUpper(), _lookaheadFirst.Value));
 
             return _lookaheadFirst;
         }
@@ -119,6 +120,10 @@ namespace ObjectBindingListView.Parsing
                 {
                     EqualityFunctionMatchCondition();
                 }
+                if (_lookaheadFirst.TokenType == TokenType.In)
+                {
+                    InFunctionCondition();
+                }
                 if (_lookaheadFirst.TokenType != TokenType.SequenceTerminator)
                     MatchConditionNext();
                 return;
@@ -163,6 +168,18 @@ namespace ObjectBindingListView.Parsing
             _currentMatchCondition.Value2 = Value2;
         }
 
+        private void InFunctionCondition()
+        {
+            _currentMatchCondition.Operator = DslOperator.In;
+
+            DiscardToken(TokenType.In);
+
+
+            DiscardToken(TokenType.OpenParenthesis);
+            StringLiteralList();
+            DiscardToken(TokenType.CloseParenthesis);
+        }
+
         private void BooleanFunctionMatchCondition()
         {
             var Operator = DslOperator.Equals;
@@ -185,7 +202,10 @@ namespace ObjectBindingListView.Parsing
             if (obj == DslObject.Variable)
             {
                 returnValue = new VariableValue();
-                (returnValue as VariableValue).VariableName = _lookaheadFirst.Value;
+                var varName = _lookaheadFirst.Value;
+                if (varName.StartsWith("[") && varName.EndsWith("]"))
+                    varName = varName.Remove(varName.Length - 1).Substring(1);
+                (returnValue as VariableValue).VariableName = varName;
                 DiscardToken();
             }
             else if (obj == DslObject.FixedValue)
@@ -197,6 +217,12 @@ namespace ObjectBindingListView.Parsing
             else if (obj == DslObject.NULL)
             {
                 returnValue = new NullValue();
+                DiscardToken();
+            }
+            else if (obj == DslObject.DataType)
+            {
+                returnValue = new DataTypeValue();
+                (returnValue as DataTypeValue).TypeName = _lookaheadFirst.Value;
                 DiscardToken();
             }
             else if (obj == DslObject.Function)
@@ -231,6 +257,16 @@ namespace ObjectBindingListView.Parsing
 
             Operator = GetOperator(_lookaheadFirst);
             DiscardToken();
+            if(Operator == DslOperator.NotLike)
+            {
+                Operator = DslOperator.Like;
+                _currentMatchCondition.Not = true;
+            }
+            if(Operator == DslOperator.NotIn)
+            {
+                Operator = DslOperator.In;
+                _currentMatchCondition.Not = true;
+            }
             Value2 = GetIValueFromDslToken();
 
 
@@ -247,11 +283,15 @@ namespace ObjectBindingListView.Parsing
                     return DslObject.Variable;
                 case TokenType.Null:
                     return DslObject.NULL;
+                case TokenType.DataType:
+                    return DslObject.DataType;
                 case TokenType.Function:
                     return DslObject.Function;
                 case TokenType.Number:
                 case TokenType.StringValue:
                 case TokenType.DateTimeValue:
+                case TokenType.True:
+                case TokenType.False:
                     return DslObject.FixedValue;
                 default:
                     throw new DslParserException(ExpectedObjectErrorText + token.Value);
@@ -329,8 +369,8 @@ namespace ObjectBindingListView.Parsing
         {
             _currentMatchCondition.Value2 = new ListValue();
 
-            (_currentMatchCondition.Value2 as ListValue).Values.Add(ReadToken(TokenType.StringValue).Value);
-            DiscardToken(TokenType.StringValue);
+            (_currentMatchCondition.Value2 as ListValue).Values.Add(ReadToken().Value);
+            DiscardToken();
             StringLiteralListNext();
         }
 
@@ -339,8 +379,8 @@ namespace ObjectBindingListView.Parsing
             if (_lookaheadFirst.TokenType == TokenType.Comma)
             {
                 DiscardToken(TokenType.Comma);
-                (_currentMatchCondition.Value2 as ListValue).Values.Add(ReadToken(TokenType.StringValue).Value);
-                DiscardToken(TokenType.StringValue);
+                (_currentMatchCondition.Value2 as ListValue).Values.Add(ReadToken().Value);
+                DiscardToken();
                 StringLiteralListNext();
             }
             else

@@ -22,11 +22,11 @@ namespace ObjectBindingListView
             {
                 dataSource = value;
                 filtered = dataSource;
-                ListChanged?.Invoke(this, new ListChangedEventArgs(ListChangedType.Reset, 0));
+                ListChanged?.Invoke(this, new ListChangedEventArgs(ListChangedType.Reset, -1));
             }
         }
 
-        public object this[int index]
+        public T this[int index]
         {
             get
             {
@@ -34,6 +34,8 @@ namespace ObjectBindingListView
             }
             set => throw new NotImplementedException();
         }
+
+        object IList.this[int index] { get => this[index]; set => throw new NotImplementedException(); }
 
         public string Filter
         {
@@ -47,16 +49,27 @@ namespace ObjectBindingListView
                 if (string.IsNullOrEmpty(filter))
                     filtered = dataSource;
                 else
-                    filtered = dataSource.Where(filter).ToList();
+                {
+                    filtered = dataSource.Where(filter)?.ToList();
+                }
                 if (IsSorted)
-                    ApplySort(SortProperty, SortDirection);
-                ListChanged?.Invoke(this, new ListChangedEventArgs(ListChangedType.Reset, 0));
+                {
+                    if (SortDescriptions.Count > 0)
+                        ApplySort(SortDescriptions);
+                    else
+                        ApplySort(SortProperty, SortDirection);
+                }
+                ListChanged?.Invoke(this, new ListChangedEventArgs(ListChangedType.Reset, -1));
             }
         }
 
-        public ListSortDescriptionCollection SortDescriptions => throw new NotImplementedException();
+        public ListSortDescriptionCollection SortDescriptions
+        {
+            get;
+            private set;
+        } = new ListSortDescriptionCollection();
 
-        public bool SupportsAdvancedSorting => false;
+        public bool SupportsAdvancedSorting => true;
 
         public bool SupportsFiltering => true;
 
@@ -114,11 +127,78 @@ namespace ObjectBindingListView
 
         public void ApplySort(ListSortDescriptionCollection sorts)
         {
-            throw new NotImplementedException();
+            SortDescriptions = sorts;
+            bool first = false;
+            var buffered = filtered.AsEnumerable();
+            foreach (ListSortDescription y in sorts)
+            {
+                var property = y.PropertyDescriptor;
+                var direction = y.SortDirection;
+                
+                try
+                {
+                    if (!first)
+                    {
+                        if (direction == ListSortDirection.Ascending)
+                        {
+                            buffered = buffered.OrderBy(x => x.GetType().GetProperty(property.Name).GetValue(x));
+                        }
+                        else
+                        {
+                            buffered = buffered.OrderByDescending(x => x.GetType().GetProperty(property.Name).GetValue(x));
+                        }
+                    } else
+                    {
+                        if (direction == ListSortDirection.Ascending)
+                        {
+                            buffered = (buffered as IOrderedEnumerable<T>).ThenBy(x => x.GetType().GetProperty(property.Name).GetValue(x));
+                        }
+                        else
+                        {
+                            buffered = (buffered as IOrderedEnumerable<T>).ThenByDescending(x => x.GetType().GetProperty(property.Name).GetValue(x));
+                        }
+                    }
+                }
+                catch (Exception)                      // Fallback String Comparer. Example: Column with different Object Types
+                {
+                    if (!first)
+                    {
+                        if (direction == ListSortDirection.Ascending)
+                        {
+                            buffered = buffered.OrderBy(x => x.GetType().GetProperty(property.Name).GetValue(x)?.ToString()).ToList();
+                        }
+                        else
+                        {
+                            buffered = buffered.OrderByDescending(x => x.GetType().GetProperty(property.Name).GetValue(x)?.ToString()).ToList();
+                        }
+                    } else
+                    {
+                        if (direction == ListSortDirection.Ascending)
+                        {
+                            buffered = (buffered as IOrderedEnumerable<T>).ThenBy(x => x.GetType().GetProperty(property.Name).GetValue(x)?.ToString()).ToList();
+                        }
+                        else
+                        {
+                            buffered = (buffered as IOrderedEnumerable<T>).ThenByDescending(x => x.GetType().GetProperty(property.Name).GetValue(x)?.ToString()).ToList();
+                        }
+                    }
+                }
+                
+                first = true;
+            }
+            filtered = buffered.ToList();
+            IsSorted = true;
+            ListChanged?.Invoke(this, new ListChangedEventArgs(ListChangedType.Reset, -1));
+            //throw new NotImplementedException();
         }
 
         public void ApplySort(PropertyDescriptor property, ListSortDirection direction)
         {
+            if(property == null)
+            {
+                IsSorted = false;
+                return;
+            }
             try
             {
                 if (direction == ListSortDirection.Ascending)

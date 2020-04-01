@@ -22,7 +22,7 @@ namespace ObjectBindingListView.Parsing.Tokenizer
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Equals, "=", 1));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.NotIn, "not in", 2));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.In, "in", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Like, "lke", 2));
+            _tokenDefinitions.Add(new TokenDefinition(TokenType.Like, "like", 2));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Limit, "^limit", 2));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Match, "match", 2));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.NotEquals, "!=|<>", 1));
@@ -41,7 +41,8 @@ namespace ObjectBindingListView.Parsing.Tokenizer
             _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d", 3));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.StringValue, "'(?:[^'\\\\]|\\\\.)*'", 3));
             _tokenDefinitions.Add(new TokenDefinition(TokenType.Number, "-?\\d+\\.\\d+|-?\\d+", 3));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Variable, "([A-Za-z_][A-Za-z0-9_]*)", 3));
+            _tokenDefinitions.Add(new TokenDefinition(TokenType.DataType, "([A-Za-z_][A-Za-z0-9_]*)(\\.([A-Za-z_][A-Za-z0-9_]*))*", 3));
+            _tokenDefinitions.Add(new TokenDefinition(TokenType.Variable, "\\[{1}?([A-Za-z_][A-Za-z0-9_]*)\\]{1}|([A-Za-z_][A-Za-z0-9_]*)", 4));
         }
 
         public IEnumerable<DslToken> Tokenize(string lqlText)

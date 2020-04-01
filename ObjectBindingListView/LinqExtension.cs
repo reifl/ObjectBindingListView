@@ -43,6 +43,7 @@ namespace ObjectBindingListView
                 methodInfos.Add("ISNULL".ToLower(), typeof(InternalFunctions).GetMethod("IsNull"));
                 methodInfos.Add("SUBSTRING".ToLower(), typeof(InternalFunctions).GetMethod("substring"));
                 methodInfos.Add("TRIM".ToLower(), typeof(InternalFunctions).GetMethod("Trim"));
+                methodInfos.Add("CONVERT".ToLower(), typeof(InternalFunctions).GetMethod("convert"));
             }
         }
 
@@ -88,11 +89,20 @@ namespace ObjectBindingListView
             }
             else if (value is VariableValue variableValue)
             {
-                return Expression.PropertyOrField(instance, variableValue.VariableName);
+                
+                return Expression.Convert(Expression.PropertyOrField(instance, variableValue.VariableName), destTyp);
             }
             else if (value is NullValue)
             {
                 return Expression.Constant(null);
+            }
+            else if(value is ListValue lValue)
+            {
+                return Expression.Constant(lValue.Values);
+            }
+            else if(value is DataTypeValue typeValue)
+            {
+                return Expression.Constant(typeValue.TypeName);
             }
             else if (value is FunctionCallValue fCall)
             {
@@ -105,7 +115,7 @@ namespace ObjectBindingListView
                     expList.Add(GetExpressionFromIValue(instance, x, parameters[i].ParameterType));
                     i++;
                 }
-                return Expression.Call(mInfo, expList);
+                return Expression.Convert(Expression.Call(mInfo, expList), destTyp);
             }
 
             return null;
@@ -138,6 +148,21 @@ namespace ObjectBindingListView
             return typeof(string);
         }
 
+        public static bool InMethod(string x, IList<string> s)
+        {
+            /*foreach(var y in s)
+            {
+                if (y.StartsWith("'") && y.EndsWith("'"))
+                    y = y.Remove(y.Length - 1).Substring(1);
+            }*/
+            for(int i=0;i < s.Count; i++)
+            {
+                if (s[i].StartsWith("'") && s[i].EndsWith("'"))
+                    s[i] = s[i].Remove(s[i].Length - 1).Substring(1);
+            }
+            return s.Contains(x);
+        }
+
         public static Expression<Func<T, bool>> BuildExpression<T>(this IEnumerable<T> source, IList<MatchCondition> conditions, ParameterExpression pe = null)
         {
 
@@ -163,9 +188,15 @@ namespace ObjectBindingListView
                     case DslOperator.Is:
                         if (!(x.Value1 is VariableValue))
                             throw new ArgumentException("Left Side Value of IS must be a Variable");
-                        if ((x.Value2 as FixedValue).Value.ToLower() != "null")
+                        if ((x.Value2 as NullValue).value != null)
                             throw new ArgumentException("IS Operator only Supports NULL");
-                        currentCond = Expression.Equal(GetExpressionFromIValue(pe, x.Value1, GetTargetType(x, typeof(T))), Expression.Constant(null));
+                        currentCond = Expression.Equal(Expression.Convert(GetExpressionFromIValue(pe, x.Value1, GetTargetType(x, typeof(T))), typeof(object)), Expression.Constant(null));
+                        break;
+                    case DslOperator.In:
+                        currentCond = Expression.Call(typeof(LinqExtension).GetMethod("InMethod"), new Expression[] {
+                            GetExpressionFromIValue(pe, x.Value1, typeof(string)),
+                            GetExpressionFromIValue(pe, x.Value2, typeof(IList<string>))
+                        });
                         break;
                     case DslOperator.NotEquals:
                         currentCond = Expression.NotEqual(GetExpressionFromIValue(pe, x.Value1, GetTargetType(x, typeof(T))), GetExpressionFromIValue(pe, x.Value2, GetTargetType(x, typeof(T))));
@@ -247,7 +278,8 @@ namespace ObjectBindingListView
         private static IEnumerable<T> WhereClause<T>(this IEnumerable<T> source, IList<MatchCondition> MatchConditions)
         {
             var expr = source.BuildExpression(MatchConditions);
-            return source.Where(expr.Compile());
+            var lambda = expr.Compile();
+            return source.Where(lambda);
         }
 
         private static Type GetPropertType(string value, Type t)

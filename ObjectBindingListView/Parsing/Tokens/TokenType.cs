@@ -36,6 +36,7 @@ namespace ObjectBindingListView.Parsing.Tokens
         SequenceTerminator,
         Function,
         Variable,
+        DataType,
         Invalid
     }
 }
