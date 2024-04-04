@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29905.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProjekt", "TestProjekt\TestProjekt.csproj", "{9ED60DB5-BF67-4177-A9A2-CF02420BCCFF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTest", "PerformanceTest\PerformanceTest.csproj", "{E2D6A52F-5CCA-438B-ACC5-81FABBB76F29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectBindingListView", "ObjectBindingListView\ObjectBindingListView.csproj", "{04F5149E-39D5-4359-AEDC-B950AF012063}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectBindingListView", "ObjectBindingListView\ObjectBindingListView.csproj", "{04F5149E-39D5-4359-AEDC-B950AF012063}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectBindingListView.Test", "ObjectBindingListView.Test\ObjectBindingListView.Test.csproj", "{190840E7-3DDE-4357-B15F-C22ACE34BF62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{04F5149E-39D5-4359-AEDC-B950AF012063}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04F5149E-39D5-4359-AEDC-B950AF012063}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04F5149E-39D5-4359-AEDC-B950AF012063}.Release|Any CPU.Build.0 = Release|Any CPU
+		{190840E7-3DDE-4357-B15F-C22ACE34BF62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{190840E7-3DDE-4357-B15F-C22ACE34BF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{190840E7-3DDE-4357-B15F-C22ACE34BF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{190840E7-3DDE-4357-B15F-C22ACE34BF62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

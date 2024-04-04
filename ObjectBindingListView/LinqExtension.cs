@@ -259,19 +259,19 @@ namespace ObjectBindingListView
             {
                 m2 = m2.Substring(1);
                 m2 = m2.Remove(m2.Length - 1);
-                return m1.Contains(m2);
+                return m1.Contains(m2, StringComparison.InvariantCultureIgnoreCase);
             }
             else if (m2.Substring(0, 1) == "%")
             {
                 m2 = m2.Substring(1);
-                return m1.EndsWith(m2);
+                return m1.EndsWith(m2, StringComparison.InvariantCultureIgnoreCase);
             }
             else if (m2.Substring(m2.Length - 1) == "%")
             {
                 m2 = m2.Remove(m2.Length - 1);
-                return m1.StartsWith(m2);
+                return m1.StartsWith(m2, StringComparison.InvariantCultureIgnoreCase);
             }
-            return m1 == m2;
+            return m1.Equals(m2, StringComparison.InvariantCultureIgnoreCase);
         }
 
 
