@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace ObjectBindingListView.Test
@@ -17,49 +18,65 @@ namespace ObjectBindingListView.Test
             {
                 IntValue = 1,
                 FloatValue = 1.0,
-                StringValue = "Michael Mustermann"
+                StringValue = "Michael Mustermann",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(2000,01,01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 2,
                 FloatValue = 5.0,
-                StringValue = "Michael Cool"
+                StringValue = "Michael Cool",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(2000, 01, 01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 1,
                 FloatValue = 1.0,
-                StringValue = "Michael"
+                StringValue = "Michael",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(1800, 01, 01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 1,
                 FloatValue = 15.4,
-                StringValue = "Robert"
+                StringValue = "Robert",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(2000, 01, 01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 1,
                 FloatValue = 1.0,
-                StringValue = "Test"
+                StringValue = "Test",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(1990, 01, 01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 1,
                 FloatValue = 1.0,
-                StringValue = "Michael Mustermann"
+                StringValue = "Michael Mustermann",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(2000, 01, 01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 1,
                 FloatValue = 1.0,
-                StringValue = "Michael Mustermann"
+                StringValue = "Michael Mustermann",
+                EnumValue = TestEnum.Value2,
+                DateTimeValue = new DateTime(1950, 01, 01)
             });
             testObjects.Add(new TestObject
             {
                 IntValue = 1,
                 FloatValue = 1.0,
-                StringValue = "Robert Michael Mustermann"
+                StringValue = "Robert Michael Mustermann",
+                EnumValue = TestEnum.Value1,
+                DateTimeValue = new DateTime(2000, 01, 01)
             });
         }
 
@@ -202,6 +219,26 @@ namespace ObjectBindingListView.Test
             objList.Filter = "[IntValue] = 1 AND [StringValue] = 'Robert'";
             Assert.AreEqual(objList.Count, 1);
         }
+
+        [Test]
+        public void EnumTest()
+        {
+            var objList = new ObjectBindingListView.ObjectListView<TestObject>();
+            objList.DataSource = testObjects;
+
+            objList.Filter = "[EnumValue] = 1";
+            Assert.AreEqual(objList.Count, 7);
+        }
+
+        [Test]
+        public void DateTimeTest()
+        {
+            var objList = new ObjectBindingListView.ObjectListView<TestObject>();
+            objList.DataSource = testObjects;
+
+            objList.Filter = "[DateTimeValue] < #04/04/1900 08:58:43#";
+            Assert.AreEqual(objList.Count, 1);
+        }
     }
 
 
@@ -211,5 +248,13 @@ namespace ObjectBindingListView.Test
         public double FloatValue { get; set; }
 
         public string StringValue { get; set; }
+        public TestEnum EnumValue { get; set; }
+        public DateTime DateTimeValue { get; set; }
+    }
+
+    enum TestEnum
+    {
+        Value1 = 1,
+        Value2 = 2
     }
 }

@@ -68,6 +68,8 @@ namespace ObjectBindingListView
                 return decimal.Parse(ObjectValue, CultureInfo.InvariantCulture);
             else if (t == typeof(DateTime))
                 return DateTime.Parse(ObjectValue);
+            else if (t.IsEnum)
+                return Enum.Parse(t, ObjectValue);
             else
             {
                 //TODO: Custom GetStringAsObject via Func<string, Type, object>
