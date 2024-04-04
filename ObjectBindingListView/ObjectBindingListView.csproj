@@ -4,8 +4,16 @@
     <TargetFrameworks>netcoreapp3.1;net4.7.2</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Offers Linq Where(string) and a IBindingListView Implementation. Based On: https://github.com/Vanlightly/DslParser </Description>
-    <Version>0.1.2-beta1</Version>
+    <Version>0.1.2-beta2</Version>
     <Authors>Michael Reif</Authors>
+	  <projectUrl>https://github.com/reifl/ObjectBindingListView</projectUrl>
+	  <Title>ObjectBindingListView</Title>
+	  <PackageProjectUrl>https://github.com/reifl/ObjectBindingListView</PackageProjectUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <RepositoryUrl>https://github.com/reifl/ObjectBindingListView</RepositoryUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <IncludeSymbols>False</IncludeSymbols>
+	  
   </PropertyGroup>
 
 </Project>

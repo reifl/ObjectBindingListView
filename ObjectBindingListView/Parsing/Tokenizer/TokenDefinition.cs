@@ -14,7 +14,8 @@ namespace ObjectBindingListView.Parsing.Tokenizer
 
         public TokenDefinition(TokenType returnsToken, string regexPattern, int precedence)
         {
-            _regex = new Regex(regexPattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var regexOptions = RegexOptions.CultureInvariant | RegexOptions.IgnoreCase;
+            _regex = new Regex(regexPattern, regexOptions);
             _returnsToken = returnsToken;
             _precedence = precedence;
         }

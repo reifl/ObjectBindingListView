@@ -3,47 +3,56 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace ObjectBindingListView.Parsing.Tokenizer
 {
     public class Tokenizer
     {
-        private List<TokenDefinition> _tokenDefinitions;
+        private static List<TokenDefinition> _tokenDefinitions;
+        private object lockObj = new object();
 
         public Tokenizer()
         {
-            _tokenDefinitions = new List<TokenDefinition>();
+            lock (lockObj)
+            {
+                if (_tokenDefinitions == null)
+                {
+                    _tokenDefinitions = new List<TokenDefinition>();
 
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Function, "([A-Za-z_][A-Za-z0-9_]*\\()", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.And, "and", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Between, "between", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.CloseParenthesis, "\\)", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Comma, ",", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Equals, "=", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.NotIn, "not in", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.In, "in", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Like, "like", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Limit, "^limit", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Match, "match", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.NotEquals, "!=|<>", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.GreaterOrEqual, ">=", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.GreaterThan, ">", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.LowerOrEqual, "<=", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.LowerThan, "<", 1));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.NotLike, "not like", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Invert, "not", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.OpenParenthesis, "\\(", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Or, "or", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.True, "true", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.False, "false", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Null, "null", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Is, "is", 2));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d", 3));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, @"#\d{1,2}\/\d{1,2}\/\d{4}(\s\d{1,2}:\d{1,2}:\d{1,2})*#", 3));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.StringValue, "'(?:[^'\\\\]|\\\\.)*'", 3));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Number, "-?\\d+\\.\\d+|-?\\d+", 3));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.DataType, "([A-Za-z_][A-Za-z0-9_]*)(\\.([A-Za-z_][A-Za-z0-9_]*))*", 3));
-            _tokenDefinitions.Add(new TokenDefinition(TokenType.Variable, "\\[{1}?([A-Za-z_][A-Za-z0-9_]*)\\]{1}|([A-Za-z_][A-Za-z0-9_]*)", 4));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Function, "([A-Za-z_][A-Za-z0-9_]*\\()", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.And, "and", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Between, "between", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.CloseParenthesis, "\\)", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Comma, ",", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Equals, "=", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.NotIn, "not in", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.In, "in", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Like, "like", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Limit, "^limit", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Match, "match", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.NotEquals, "!=|<>", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.GreaterOrEqual, ">=", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.GreaterThan, ">", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.LowerOrEqual, "<=", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.LowerThan, "<", 1));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.NotLike, "not like", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Invert, "not", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.OpenParenthesis, "\\(", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Or, "or", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.True, "true", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.False, "false", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Null, "null", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Is, "is", 2));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, "\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d", 3));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, @"#\d{1,2}\/\d{1,2}\/\d{4}(\s\d{1,2}:\d{1,2}:\d{1,2})*#", 3));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.DateTimeValue, @"#\d{4}-\d{1,2}-\d{1,2}(\s\d{1,2}:\d{1,2}:\d{1,2})*#", 3));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.StringValue, "'(?:[^'\\\\]|\\\\.)*'", 3));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Number, "-?\\d+\\.\\d+|-?\\d+", 3));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.DataType, "([A-Za-z_][A-Za-z0-9_]*)(\\.([A-Za-z_][A-Za-z0-9_]*))*", 3));
+                    _tokenDefinitions.Add(new TokenDefinition(TokenType.Variable, "\\[{1}?([A-Za-z_][A-Za-z0-9_]*)\\]{1}|([A-Za-z_][A-Za-z0-9_]*)", 4));
+                }
+            }
         }
 
         public IEnumerable<DslToken> Tokenize(string lqlText)
