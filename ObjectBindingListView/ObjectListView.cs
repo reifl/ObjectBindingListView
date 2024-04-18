@@ -12,7 +12,7 @@ namespace ObjectBindingListView
         private IList<T> dataSource = null;
         private IList<T> filtered;
         private string filter;
-        public IList<T> DataSource
+        public virtual IList<T> DataSource
         {
             get
             {
@@ -26,7 +26,7 @@ namespace ObjectBindingListView
             }
         }
 
-        public T this[int index]
+        public virtual T this[int index]
         {
             get
             {
@@ -37,7 +37,7 @@ namespace ObjectBindingListView
 
         object IList.this[int index] { get => this[index]; set => throw new NotImplementedException(); }
 
-        public string Filter
+        public virtual string Filter
         {
             get
             {
@@ -69,41 +69,41 @@ namespace ObjectBindingListView
             private set;
         } = new ListSortDescriptionCollection();
 
-        public bool SupportsAdvancedSorting => true;
+        public virtual bool SupportsAdvancedSorting => true;
 
-        public bool SupportsFiltering => true;
+        public virtual bool SupportsFiltering => true;
 
-        public bool AllowNew => true;
+        public virtual bool AllowNew => true;
 
-        public bool AllowEdit => true;
+        public virtual bool AllowEdit => true;
 
-        public bool AllowRemove => true;
+        public virtual bool AllowRemove => true;
 
-        public bool SupportsChangeNotification => true;
+        public virtual bool SupportsChangeNotification => true;
 
-        public bool SupportsSearching => false;
+        public virtual bool SupportsSearching => false;
 
-        public bool SupportsSorting => true;
+        public virtual bool SupportsSorting => true;
 
-        public bool IsSorted { get; protected set; }
+        public virtual bool IsSorted { get; protected set; }
 
-        public PropertyDescriptor SortProperty { get; protected set; }
+        public virtual PropertyDescriptor SortProperty { get; protected set; }
 
-        public ListSortDirection SortDirection { get; protected set; }
+        public virtual ListSortDirection SortDirection { get; protected set; }
 
-        public bool IsReadOnly => true;
+        public virtual bool IsReadOnly => true;
 
-        public bool IsFixedSize => false;
+        public virtual bool IsFixedSize => false;
 
-        public int Count => filtered.Count;
+        public virtual int Count => filtered.Count;
 
-        public object SyncRoot => null;
+        public virtual object SyncRoot => null;
 
-        public bool IsSynchronized => false;
+        public virtual bool IsSynchronized => false;
 
         public event ListChangedEventHandler ListChanged;
 
-        public int Add(object value)
+        public virtual int Add(object value)
         {
             if (value is T)
             {
@@ -115,17 +115,19 @@ namespace ObjectBindingListView
             return -1;
         }
 
-        public void AddIndex(PropertyDescriptor property)
+        public virtual void AddIndex(PropertyDescriptor property)
         {
             throw new NotImplementedException();
         }
 
-        public object AddNew()
+        public virtual object AddNew()
         {
-            return typeof(T).GetConstructor(new Type[] { }).Invoke(new object[] { });
+            var newElement = typeof(T).GetConstructor(new Type[] { }).Invoke(new object[] { });
+            DataSource.Add((T)newElement);
+            return newElement;
         }
 
-        public void ApplySort(ListSortDescriptionCollection sorts)
+        public virtual void ApplySort(ListSortDescriptionCollection sorts)
         {
             SortDescriptions = sorts;
             bool first = false;
@@ -192,7 +194,7 @@ namespace ObjectBindingListView
             //throw new NotImplementedException();
         }
 
-        public void ApplySort(PropertyDescriptor property, ListSortDirection direction)
+        public virtual void ApplySort(PropertyDescriptor property, ListSortDirection direction)
         {
             if(property == null)
             {
@@ -219,14 +221,14 @@ namespace ObjectBindingListView
             //throw new NotImplementedException();
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             DataSource.Clear();
             Filter = Filter;
             ListChanged?.Invoke(this, new ListChangedEventArgs(ListChangedType.Reset, 0));
         }
 
-        public bool Contains(object value)
+        public virtual bool Contains(object value)
         {
             if (value is T)
             {
@@ -235,22 +237,22 @@ namespace ObjectBindingListView
             return false;
         }
 
-        public void CopyTo(Array array, int index)
+        public virtual void CopyTo(Array array, int index)
         {
             filtered.CopyTo((T[])array, index);
         }
 
-        public int Find(PropertyDescriptor property, object key)
+        public virtual int Find(PropertyDescriptor property, object key)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerator GetEnumerator()
+        public virtual IEnumerator GetEnumerator()
         {
             return filtered.GetEnumerator();
         }
 
-        public int IndexOf(object value)
+        public virtual int IndexOf(object value)
         {
             if (value is T)
             {
@@ -259,7 +261,7 @@ namespace ObjectBindingListView
             return -1;
         }
 
-        public void Insert(int index, object value)
+        public virtual void Insert(int index, object value)
         {
             if (value is T)
             {
@@ -268,7 +270,7 @@ namespace ObjectBindingListView
             }
         }
 
-        public void Remove(object value)
+        public virtual void Remove(object value)
         {
             if (value is T)
             {
@@ -278,7 +280,7 @@ namespace ObjectBindingListView
             }
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             var x = filtered[index];
             DataSource.Remove(x);
@@ -286,17 +288,17 @@ namespace ObjectBindingListView
             Filter = Filter;
         }
 
-        public void RemoveFilter()
+        public virtual void RemoveFilter()
         {
             Filter = "";
         }
 
-        public void RemoveIndex(PropertyDescriptor property)
+        public virtual void RemoveIndex(PropertyDescriptor property)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveSort()
+        public virtual void RemoveSort()
         {
             Filter = Filter;
             SortProperty = null;
