@@ -122,6 +122,7 @@ namespace ObjectBindingListView
 
         public virtual object AddNew()
         {
+            
             var newElement = typeof(T).GetConstructor(new Type[] { }).Invoke(new object[] { });
             DataSource.Add((T)newElement);
             return newElement;

@@ -49,6 +49,10 @@ namespace ObjectBindingListView
 
         private static object GetStringAsObject(string ObjectValue, Type t)
         {
+            if (Nullable.GetUnderlyingType(t) != null)
+            {
+                return GetStringAsObject(ObjectValue, Nullable.GetUnderlyingType(t));
+            }
             if (ObjectValue.Substring(0, 1) == "'")
             {
                 ObjectValue = ObjectValue.Substring(1);
@@ -87,11 +91,12 @@ namespace ObjectBindingListView
                     val1 = val1.Substring(1);
                     val1 = val1.Remove(val1.Length - 1);
                 }
+                if(destTyp.IsGenericType && typeof(Nullable<>) == destTyp.GetGenericTypeDefinition())
+                    return Expression.Convert(Expression.Constant(GetStringAsObject(val1, destTyp)), destTyp);
                 return Expression.Constant(GetStringAsObject(val1, destTyp));
             }
             else if (value is VariableValue variableValue)
             {
-                
                 return Expression.Convert(Expression.PropertyOrField(instance, variableValue.VariableName), destTyp);
             }
             else if (value is NullValue)
@@ -124,8 +129,6 @@ namespace ObjectBindingListView
         }
 
         private static IDictionary<string, MethodInfo> methodInfos;
-
-
 
         private static Type GetTargetType(MatchCondition cond, Type baseType)
         {
@@ -217,7 +220,8 @@ namespace ObjectBindingListView
                         //currentCond = Expression.GreaterThanOrEqual(Expression.Property(pe, x.VariableName), Expression.Constant(GetStringAsObject(x.Value, GetPropertType(x.VariableName, typeof(T)))));
                         break;
                     case DslOperator.Lower:
-                        currentCond = Expression.LessThan(GetExpressionFromIValue(pe, x.Value1, GetTargetType(x, typeof(T))), GetExpressionFromIValue(pe, x.Value2, GetTargetType(x, typeof(T))));
+                        currentCond = Expression.LessThan(GetExpressionFromIValue(pe, x.Value1, GetTargetType(x, typeof(T))), 
+                            GetExpressionFromIValue(pe, x.Value2, GetTargetType(x, typeof(T))));
                         //currentCond = Expression.LessThan(Expression.Property(pe, x.VariableName), Expression.Constant(GetStringAsObject(x.Value, GetPropertType(x.VariableName, typeof(T)))));
                         break;
                     case DslOperator.LowerOrEqual:

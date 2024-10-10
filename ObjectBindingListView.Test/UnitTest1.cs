@@ -20,7 +20,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 1.0,
                 StringValue = "Michael Mustermann",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(2000,01,01)
+                DateTimeValue = new DateTime(2000,01,01),
+                NullableDateTime = null
             });
             testObjects.Add(new TestObject
             {
@@ -28,7 +29,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 5.0,
                 StringValue = "Michael Cool",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(2000, 01, 01)
+                DateTimeValue = new DateTime(2000, 01, 01),
+                NullableDateTime = null
             });
             testObjects.Add(new TestObject
             {
@@ -36,7 +38,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 1.0,
                 StringValue = "Michael",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(1800, 01, 01)
+                DateTimeValue = new DateTime(1800, 01, 01),
+                NullableDateTime = new DateTime(2000, 10, 10)
             });
             testObjects.Add(new TestObject
             {
@@ -44,7 +47,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 15.4,
                 StringValue = "Robert",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(2000, 01, 01)
+                DateTimeValue = new DateTime(2000, 01, 01),
+                NullableDateTime = new DateTime(2000, 10, 10)
             });
             testObjects.Add(new TestObject
             {
@@ -52,7 +56,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 1.0,
                 StringValue = "Test",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(1990, 01, 01)
+                DateTimeValue = new DateTime(1990, 01, 01),
+                NullableDateTime = new DateTime(2000, 10, 10)
             });
             testObjects.Add(new TestObject
             {
@@ -60,7 +65,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 1.0,
                 StringValue = "Michael Mustermann",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(2000, 01, 01)
+                DateTimeValue = new DateTime(2000, 01, 01),
+                NullableDateTime = new DateTime(1800, 10, 10)
             });
             testObjects.Add(new TestObject
             {
@@ -68,7 +74,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 1.0,
                 StringValue = "Michael Mustermann",
                 EnumValue = TestEnum.Value2,
-                DateTimeValue = new DateTime(1950, 01, 01)
+                DateTimeValue = new DateTime(1950, 01, 01),
+                NullableDateTime = new DateTime(1950, 10, 10)
             });
             testObjects.Add(new TestObject
             {
@@ -76,7 +83,8 @@ namespace ObjectBindingListView.Test
                 FloatValue = 1.0,
                 StringValue = "Robert Michael Mustermann",
                 EnumValue = TestEnum.Value1,
-                DateTimeValue = new DateTime(2000, 01, 01)
+                DateTimeValue = new DateTime(2000, 01, 01),
+                NullableDateTime = null
             });
         }
 
@@ -239,6 +247,46 @@ namespace ObjectBindingListView.Test
             objList.Filter = "[DateTimeValue] < #04/04/1900 08:58:43#";
             Assert.AreEqual(objList.Count, 1);
         }
+
+        [Test]
+        public void NullableDateTimeTestIsNull()
+        {
+            var objList = new ObjectBindingListView.ObjectListView<TestObject>();
+            objList.DataSource = testObjects;
+
+            objList.Filter = "[NullableDateTime] is null";
+            Assert.AreEqual(objList.Count, 3);
+        }
+
+        [Test]
+        public void NullableDateTimeTestEqNull()
+        {
+            var objList = new ObjectBindingListView.ObjectListView<TestObject>();
+            objList.DataSource = testObjects;
+
+            objList.Filter = "[NullableDateTime] = null";
+            Assert.AreEqual(objList.Count, 3);
+        }
+
+        [Test]
+        public void NullableDateTimeTest()
+        {
+            var objList = new ObjectBindingListView.ObjectListView<TestObject>();
+            objList.DataSource = testObjects;
+
+            objList.Filter = "[NullableDateTime] = #10/10/1950 00:00:00#";
+            Assert.AreEqual(objList.Count, 1);
+        }
+
+        [Test]
+        public void NullableDateTimeTestLessThan()
+        {
+            var objList = new ObjectBindingListView.ObjectListView<TestObject>();
+            objList.DataSource = testObjects;
+
+            objList.Filter = "[NullableDateTime] < #10/10/1950 00:00:00#";
+            Assert.AreEqual(objList.Count, 1);
+        }
     }
 
 
@@ -250,6 +298,7 @@ namespace ObjectBindingListView.Test
         public string StringValue { get; set; }
         public TestEnum EnumValue { get; set; }
         public DateTime DateTimeValue { get; set; }
+        public DateTime? NullableDateTime { get; set; }
     }
 
     enum TestEnum
